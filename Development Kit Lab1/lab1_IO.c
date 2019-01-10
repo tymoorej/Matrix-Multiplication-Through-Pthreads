@@ -63,7 +63,7 @@ int Lab1_saveoutput(int **C, int *n, double Time)
 
     -----
     Input:
-    int **C     pointer to the result matrix 
+    int **C     result matrix 
     int *n      pointer to the matrix size
     double Time measure calulation time
     

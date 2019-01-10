@@ -2,27 +2,50 @@
 #include <stdlib.h>
 #include "lab1_IO.h"
 #include <pthread.h>
+#include <math.h>
 
 struct thread_needed_info{
     pthread_t tid;
-    int start;
-    int end;
+    int s;
+    int i;
+    int j;
     int done;
 };
 
+int **A; int **B; int **C; int n; int m; int q;
 
-void get_start_and_end(int s, int m, int* start, int* end){
-    (*start) = s*m;
-    (*end) = ((s+1) * m) -1;
+void get_i_and_j(int s, int* i, int* j){
+    (*i) = floor(s / (n/q)) * q;
+    (*j) = (s*q) % n;
+}
+
+int calculate_sum(int a, int b){
+    int sum = 0;
+
+    for (int iter = 0; iter < n; iter++){
+        sum += A[a][iter] * B[iter][b];
+    }
+
+    return sum;
 }
 
 void* thread(void* ptr){
-    printf("here\n");
     struct thread_needed_info *th = (struct thread_needed_info *) ptr;
+    
+    int i = th->i;
+    int j = th->j;
+    int s = th->s;
 
-    while (1){
-        printf("start=%d, end=%d\n", th->start, th->end);
+    for (int a = i; a<i+q; a++){
+        for (int b = j; b<j+q; b++){
+            int summ = calculate_sum(a,b);
+            C[a][b] = summ;
+        }
     }
+
+    th->done = 1;
+
+    return ptr;
 } 
 
 
@@ -40,22 +63,30 @@ int main(int argc, char const *argv[])
         exit(0);
     }
 
-    int **A; int **B; int n;
+
     Lab1_loadinput(&A, &B, &n);
 
-    int m = n / p;
+    m = n / p;
+
+    q = sqrt((n*n)/p);
+
+
+    C = malloc(n * sizeof(int*));
+    for (int g = 0; g < n; g++)
+        C[g] = malloc(n * sizeof(int));
 
     struct thread_needed_info threads[p];
 
     for (int s=0; s<p; s++){
-        int start; 
-        int end;
-        get_start_and_end(s, m, &start, &end);
+        int i; 
+        int j;
+        get_i_and_j(s, &i, &j);
         struct thread_needed_info th;
-        th.start = start;
-        th.end = end;
+        th.i = i;
+        th.j = j;
         th.tid = -1;
         th.done = 0;
+        th.s = s;
         threads[s] = th;
     }
 
@@ -76,6 +107,8 @@ int main(int argc, char const *argv[])
             break;
         }
     }
+
+    Lab1_saveoutput(C, &n, 0);
 
     return 0;
 }
