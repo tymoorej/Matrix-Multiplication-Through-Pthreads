@@ -7,6 +7,7 @@ struct thread_needed_info{
     pthread_t tid;
     int start;
     int end;
+    int done;
 };
 
 
@@ -54,14 +55,27 @@ int main(int argc, char const *argv[])
         th.start = start;
         th.end = end;
         th.tid = -1;
+        th.done = 0;
         threads[s] = th;
     }
+
 
     for (int s=0; s<p; s++){
         pthread_create(&threads[s].tid, NULL, thread, &threads[s]);
     }
 
+    while(1){
+        int all_done =1;
+        for (int s=0; s<p; s++){
+            if (threads[s].done == 0){
+                all_done = 0;
+            }
+        }
 
+        if(all_done){
+            break;
+        }
+    }
 
     return 0;
 }
