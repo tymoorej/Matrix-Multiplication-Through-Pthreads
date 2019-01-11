@@ -34,7 +34,6 @@ void* thread(void* ptr){
     
     int i = th->i;
     int j = th->j;
-    int s = th->s;
 
     for (int a = i; a<i+q; a++){
         for (int b = j; b<j+q; b++){
