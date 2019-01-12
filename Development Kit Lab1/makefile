@@ -1,5 +1,5 @@
-lab1:
-	gcc lab1.c lab1_IO.c -o lab1 -pthread -Wall
+main:
+	gcc main.c lab1_IO.c -o main -pthread -Wall
 
 serialtester:
 	gcc serialtester.c lab1_IO.c -o serialtester

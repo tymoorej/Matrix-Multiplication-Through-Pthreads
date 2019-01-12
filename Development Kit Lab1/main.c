@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lab1_IO.h"
+#include "timer.h"
 #include <pthread.h>
 #include <math.h>
 
@@ -50,6 +51,9 @@ void* thread(void* ptr){
 
 int main(int argc, char const *argv[])
 {
+    double start;
+    GET_TIME(start);
+
     if (argc != 2){
         printf("Invalid Number of Arguments\n");
         exit(0);
@@ -59,6 +63,13 @@ int main(int argc, char const *argv[])
 
     if (p <= 0){
         printf("Invalid argument\n");
+        exit(0);
+    }
+
+    int root_p = sqrt(p);
+
+    if (root_p * root_p != p){
+        printf("Number of threads is not a square number\n");
         exit(0);
     }
 
@@ -107,7 +118,11 @@ int main(int argc, char const *argv[])
         }
     }
 
-    Lab1_saveoutput(C, &n, 0);
+
+    double end;
+    GET_TIME(end);
+    
+    Lab1_saveoutput(C, &n, end-start);
 
     return 0;
 }
