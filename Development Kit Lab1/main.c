@@ -23,7 +23,8 @@ void get_i_and_j(int s, int* i, int* j){
 int calculate_sum(int a, int b){
     int sum = 0;
 
-    for (int iter = 0; iter < n; iter++){
+    int iter;
+    for (iter = 0; iter < n; iter++){
         sum += A[a][iter] * B[iter][b];
     }
 
@@ -36,8 +37,11 @@ void* thread(void* ptr){
     int i = th->i;
     int j = th->j;
 
-    for (int a = i; a<i+q; a++){
-        for (int b = j; b<j+q; b++){
+    int a;
+    int b;
+
+    for (a = i; a<i+q; a++){
+        for (b = j; b<j+q; b++){
             int summ = calculate_sum(a,b);
             C[a][b] = summ;
         }
@@ -49,8 +53,7 @@ void* thread(void* ptr){
 } 
 
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]){
     double start;
     GET_TIME(start);
 
@@ -73,8 +76,12 @@ int main(int argc, char const *argv[])
         exit(0);
     }
 
-
     Lab1_loadinput(&A, &B, &n);
+
+    if (((n*n) % p ) !=0){
+        printf("n squared is not divisible by the number of threads\n");
+        exit(0);
+    }
 
     m = n / p;
 
@@ -82,12 +89,15 @@ int main(int argc, char const *argv[])
 
 
     C = malloc(n * sizeof(int*));
-    for (int g = 0; g < n; g++)
+
+    int g;
+    for (g = 0; g < n; g++)
         C[g] = malloc(n * sizeof(int));
 
     struct thread_needed_info threads[p];
 
-    for (int s=0; s<p; s++){
+    int s;
+    for (s=0; s<p; s++){
         int i; 
         int j;
         get_i_and_j(s, &i, &j);
@@ -101,13 +111,14 @@ int main(int argc, char const *argv[])
     }
 
 
-    for (int s=0; s<p; s++){
+    for (s=0; s<p; s++){
         pthread_create(&threads[s].tid, NULL, thread, &threads[s]);
     }
 
     while(1){
         int all_done =1;
-        for (int s=0; s<p; s++){
+
+        for (s=0; s<p; s++){
             if (threads[s].done == 0){
                 all_done = 0;
             }

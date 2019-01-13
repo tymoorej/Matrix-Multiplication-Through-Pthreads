@@ -1,5 +1,5 @@
 main:
-	gcc main.c lab1_IO.c -o main -pthread -Wall
+	gcc main.c lab1_IO.c -o main -lpthread -Wall -lm
 
 serialtester:
 	gcc serialtester.c lab1_IO.c -o serialtester
